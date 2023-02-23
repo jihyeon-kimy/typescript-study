@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Todo } from "../todo.model";
+import Todo from "../models/todo.model";
 import TodoItem from "./TodoItem";
 import "./TodoList.css";
 
@@ -30,6 +30,7 @@ const TodoList: React.FC<TodoListProps> = (props) => {
     <ul>
       {props.items.map((todo, idx) => (
         <TodoItem
+          key={todo.id}
           todo={todo}
           idx={idx}
           onDeleteTodo={props.onDeleteTodo}

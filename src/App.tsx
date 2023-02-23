@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import NewTodo from "./components/NewTodo";
 import TodoList from "./components/TodoList";
-import { Todo } from "./todo.model";
+import Todo from "./models/todo.model";
 
 const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const todoAddHandler = (text: string) => {
-    setTodos((prev) => [...prev, { id: Math.random().toString(), text }]);
+    setTodos((prev) => [...prev, new Todo(text)]);
   };
 
   const switchTodoHandler = (dragIdx: number, dropIdx: number) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Todo } from "../todo.model";
+import Todo from "../models/todo.model";
 
 interface TodoItemProps {
   todo: Todo;
@@ -17,7 +17,6 @@ const TodoItem: React.FC<TodoItemProps> = (props) => {
       onDragStart={props.onDragStart}
       onDragOver={props.onDragEnter}
       onDragEnd={props.onDragEnd}
-      key={props.todo.id}
       data-id={props.idx}>
       <span>{props.todo.text}</span>
       <button onClick={props.onDeleteTodo.bind(null, props.todo.id)}>DELETE</button>
