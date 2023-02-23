@@ -1,85 +1,70 @@
 # Typescript + React
 
-타입스크립트를 공부하며 기록한 레포지토리입니다.
+타입스크립트를 익히기 위해, 기본적인 CRUD(Todo List앱)을 만들며 기록한 레포지토리 입니다.
 
-## 타입스크립트
+---
 
-타입스크립트는 자바스크립트 문법에 타입 표기 구문을 추가한 것이다. 코드를 작성한 시점에 타입이 고정되어 있기 때문에, 의도치 않은 방식의 코드 실행을 잡아낼 수 있고, 런타임에 오류를 찾을 필요 없이 코드 작성 시점에 오류를 발견할 수 있다는 이점이 있다.
+### 1. `React.FC`와 Props
 
-브라우저에서 실행하기 위해 타입스크립트를 자바스크립트로 컴파일 해야 한다. 자바스크립트는 타입 표기를 이해하지 못하기 때문에, 컴파일이 진행되는 동안 타입 표기는 모두 삭제된다.
+- `React.FC` 단순한 function이 아닌, 함수형 컴포넌트 라는 것을 표시한다.
+- 컴포넌트 안에서 props를 사용하면, 타입스크립트는 props의 구조를 모르기 때문에 알려줘야 한다.
 
-<br />
+```tsx
+interface TodoListProps {
+  items: { id: string; text: string }[];
+}
 
-## 타입추론
-
-```javascript
-let name = "Kim Jihyeon";
-name = 1234; // ERROR!!
-```
-
-변수를 만들고 바로 값을 할당하면, 타입스크립트는 해당 값을 변수의 타입으로 여긴다. 이후 다른 값을 할당하려고 하면 오류가 발생한다. 불필요한 타입 지정을 줄이고 타입 추론 기능을 활용하는 것이 권장되는 방식이다.
-
-<br />
-
-## Union 타입
-
-한 개 이상의 타입을 하나의 변수에 지정할 수 있게 해주는 기능
-
-```javascript
-let ID: string | number = "Kim Jihyeon";
-ID = 1234;
-```
-
-<br />
-
-## Type Aliases
-
-동일한 타입을 반복해서 정의해야 하는 경우. 기본 타입을 만들어 복잡한 타입을 정의해두고, 타입 별칭을 사용한다.
-
-```javascript
-type Person = {
-  name: string,
-  age: number,
+const TodoList: React.FC<TodoListProps> = (props) => {
+  return (
+    <ul>
+      {props.items.map((todo) => (
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
 };
-
-let person: Person;
-let people: Person[];
 ```
 
-<br />
+### 2. useRef (와 !의 의미)
 
-## void 타입
+- ref는 일반적인 function이기 때문에, 어떤 데이터(아래에서는 데이터 타입은 HTMLInputElement, 기본값은 null을 주었다)가 저장될지 아는 것은 중요하다.
+- 타입스크립트는 ref 연결이 완료되었는지 확실히 알 수 없기 때문에, textInputRef.current가 null일 수 있다고 생각한다. null이라면 value값을 갖지 못하기 때문에 오류가 생긴다. `textInputRef.current!.value` 느낌표를 더해서 타입스크립트에게 ref의 값이 설정될 것임을 알려준다.
+- 처음에 컴포넌트는 순차적으로 렌더링 되기 때문에, return의 form부분이 렌더링된 후에야 ref연결이 완료되고 ref가 작동하기 시작한다. 코드를 작성하는 사람 ref가 연결되어 null값이 들어가지 않음을 알지만, 타입스크립트는 이를 이해하지 못한다.
 
-함수의 반환 타입에 사용되며, 함수에 반환값이 없다는 것을 뜻한다.
-
-```javascript
-function printOutput(value: any): void {
-  console.log(value);
-}
-```
-
-<br/>
-
-## generics(제네릭) 타입
-
-어떤 타입이든 사용할 수 있지만, 특정 타입을 사용해 함수를 실행하고 나면 해당 타입이 고정되어 작동한다.
-
-```javascript
-function insertAtBeginning<T>(array: T[], value: T) {
-  const newArray = [value, ...array];
-  return newArray;
+```tsx
+interface NewTodoProps {
+  onAddTodo: (todoText: string) => void;
 }
 
-const numberArray = insertAtBeginning([1, 2, 3], -1);
-const stringArray = insertAtBeginning(["a", "b", "c"], "d");
+const NewTodo: React.FC<NewTodoProps> = (props) => {
+  const textInputRef = useRef<HTMLInputElement>(null); // **useRef
+  const todoSubmitHandler = (event: React.FormEvent) => {
+    event.preventDefault();
+    const enteredText = textInputRef.current!.value; // **ref.current!.value
+    props.onAddTodo(enteredText);
+  };
 
-numberArray[0].split(""); //ERROR!!!
-stringArray[0].split("");
+  return (
+    <form onSubmit={todoSubmitHandler}>
+      <div>
+        <label htmlFor="todo-text">Todo Text</label>
+        <input type="text" id="todo-text" ref={textInputRef} />
+      </div>
+      <button type="submit">ADD TODO</button>
+    </form>
+  );
+};
 ```
 
-제네릭이 필요한 이유
-<br />
-`① function insertAtBeginning(array: any[], value: any)` 와 `② function insertAtBeginning<T>(array: T[], value: T)` 의 차이
-<br />
+### 3. useState를 배열로 초기화할 때
 
-①은 함수의 결과를 any[]로 추론하기 때문에, 함수를 호출한 다음 타입스크립트로부터 어떤 지원도 받을 수 없다. (ERROR라고 주석이 달린 부분이 런타임에 발견이 된다.) any 타입이 필요한데, any를 사용하면 타입스크립트의 기능을 사용할 수 없는 상황. 이럴 때 필요한 것인 제네릭이다. ②의 경우, array배열과 value의 값이 같은 타입이라는 것을 알리고, 타입스크립트에 인수의 정확한 값을 살펴봐야 한다는 것을 알린다. 타입스크립트가 any가 아닌 타입을 추론하기 때문에, 함술르 실행한 이후 타입스크립트의 기능을 사용할 수 있다.
+```tsx
+// wrong way❌
+const [todos, setTodos] = useState<>([]);
+// right way👍
+const [todos, setTodos] = useState<Todo[]>([]);
+```
+
+- wrong way에 적혀있는 것과 같이 빈 배열로 useState를 초기화하면, 타입스크립트는 useSate가 항상 비여있을 배열을 가질 것을 기대한다. never[]
+- 따라서 State가 시간이 지날 수록 어떻게 될 것인지 타입스크립트에게 알려주어야 한다.
+- useState도 일반적인 function이므로, state가 어떤 데이터 종류를 갖을지 알려줄 수 있다. (right way 참고)
