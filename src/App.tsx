@@ -10,6 +10,13 @@ const App: React.FC = () => {
     setTodos((prev) => [...prev, { id: Math.random().toString(), text }]);
   };
 
+  const switchTodoHandler = (dragIdx: number, dropIdx: number) => {
+    const switchedTodos = JSON.parse(JSON.stringify(todos));
+    switchedTodos.splice(dragIdx, 1);
+    switchedTodos.splice(dropIdx, 0, todos[dragIdx]);
+    setTodos(switchedTodos);
+  };
+
   const todoDeleteHandler = (todoId: string) => {
     setTodos((prevTodos) => {
       return prevTodos.filter((todo) => todo.id !== todoId);
@@ -19,7 +26,11 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <NewTodo onAddTodo={todoAddHandler} />
-      <TodoList items={todos} onDeleteTodo={todoDeleteHandler} />
+      <TodoList
+        items={todos}
+        onDeleteTodo={todoDeleteHandler}
+        onSwitchTodos={switchTodoHandler}
+      />
     </div>
   );
 };
