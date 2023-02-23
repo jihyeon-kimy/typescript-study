@@ -83,3 +83,24 @@ stringArray[0].split("");
 <br />
 
 ①은 함수의 결과를 any[]로 추론하기 때문에, 함수를 호출한 다음 타입스크립트로부터 어떤 지원도 받을 수 없다. (ERROR라고 주석이 달린 부분이 런타임에 발견이 된다.) any 타입이 필요한데, any를 사용하면 타입스크립트의 기능을 사용할 수 없는 상황. 이럴 때 필요한 것인 제네릭이다. ②의 경우, array배열과 value의 값이 같은 타입이라는 것을 알리고, 타입스크립트에 인수의 정확한 값을 살펴봐야 한다는 것을 알린다. 타입스크립트가 any가 아닌 타입을 추론하기 때문에, 함술르 실행한 이후 타입스크립트의 기능을 사용할 수 있다.
+
+<br/>
+
+## type casting(타입 캐스팅)
+
+타입 캐스팅은 타입스크립트에게 뒤에 오는 표현식이 어떤 타입이 될 것인지 알려주는 것이다. 캐스팅하는 방법은 아래 두가지이다.
+
+- 껵쇄 괄호를 입력하고 변환(cast)하려는 타입 입력
+- `as HTMLDivElement`와 같은 형태를 추가
+
+```javascript
+class ProjectInput {
+  tempalteElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+
+  constructor(){
+    this.tempalteElement = document.getElementById('project-input')! as HTMLTemplateElement
+    this hostElement = document.getElementById('app')!
+  }
+}
+```
