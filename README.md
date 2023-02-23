@@ -1,46 +1,85 @@
-# Getting Started with Create React App
+# Typescript + React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+타입스크립트를 공부하며 기록한 레포지토리입니다.
 
-## Available Scripts
+## 타입스크립트
 
-In the project directory, you can run:
+타입스크립트는 자바스크립트 문법에 타입 표기 구문을 추가한 것이다. 코드를 작성한 시점에 타입이 고정되어 있기 때문에, 의도치 않은 방식의 코드 실행을 잡아낼 수 있고, 런타임에 오류를 찾을 필요 없이 코드 작성 시점에 오류를 발견할 수 있다는 이점이 있다.
 
-### `npm start`
+브라우저에서 실행하기 위해 타입스크립트를 자바스크립트로 컴파일 해야 한다. 자바스크립트는 타입 표기를 이해하지 못하기 때문에, 컴파일이 진행되는 동안 타입 표기는 모두 삭제된다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+<br />
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 타입추론
 
-### `npm test`
+```javascript
+let name = "Kim Jihyeon";
+name = 1234; // ERROR!!
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+변수를 만들고 바로 값을 할당하면, 타입스크립트는 해당 값을 변수의 타입으로 여긴다. 이후 다른 값을 할당하려고 하면 오류가 발생한다. 불필요한 타입 지정을 줄이고 타입 추론 기능을 활용하는 것이 권장되는 방식이다.
 
-### `npm run build`
+<br />
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Union 타입
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+한 개 이상의 타입을 하나의 변수에 지정할 수 있게 해주는 기능
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```javascript
+let ID: string | number = "Kim Jihyeon";
+ID = 1234;
+```
 
-### `npm run eject`
+<br />
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Type Aliases
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+동일한 타입을 반복해서 정의해야 하는 경우. 기본 타입을 만들어 복잡한 타입을 정의해두고, 타입 별칭을 사용한다.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```javascript
+type Person = {
+  name: string,
+  age: number,
+};
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+let person: Person;
+let people: Person[];
+```
 
-## Learn More
+<br />
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## void 타입
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+함수의 반환 타입에 사용되며, 함수에 반환값이 없다는 것을 뜻한다.
+
+```javascript
+function printOutput(value: any): void {
+  console.log(value);
+}
+```
+
+<br/>
+
+## generics(제네릭) 타입
+
+어떤 타입이든 사용할 수 있지만, 특정 타입을 사용해 함수를 실행하고 나면 해당 타입이 고정되어 작동한다.
+
+```javascript
+function insertAtBeginning<T>(array: T[], value: T) {
+  const newArray = [value, ...array];
+  return newArray;
+}
+
+const numberArray = insertAtBeginning([1, 2, 3], -1);
+const stringArray = insertAtBeginning(["a", "b", "c"], "d");
+
+numberArray[0].split(""); //ERROR!!!
+stringArray[0].split("");
+```
+
+제네릭이 필요한 이유
+<br />
+`① function insertAtBeginning(array: any[], value: any)` 와 `② function insertAtBeginning<T>(array: T[], value: T)` 의 차이
+<br />
+
+①은 함수의 결과를 any[]로 추론하기 때문에, 함수를 호출한 다음 타입스크립트로부터 어떤 지원도 받을 수 없다. (ERROR라고 주석이 달린 부분이 런타임에 발견이 된다.) any 타입이 필요한데, any를 사용하면 타입스크립트의 기능을 사용할 수 없는 상황. 이럴 때 필요한 것인 제네릭이다. ②의 경우, array배열과 value의 값이 같은 타입이라는 것을 알리고, 타입스크립트에 인수의 정확한 값을 살펴봐야 한다는 것을 알린다. 타입스크립트가 any가 아닌 타입을 추론하기 때문에, 함술르 실행한 이후 타입스크립트의 기능을 사용할 수 있다.
