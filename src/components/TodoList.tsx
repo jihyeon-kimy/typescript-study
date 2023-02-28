@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import React from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Todo from "../models/todo.model";
 import TodoItem from "./TodoItem";
 import "./TodoList.css";
@@ -27,19 +28,21 @@ const TodoList: React.FC<TodoListProps> = (props) => {
   };
 
   return (
-    <ul>
+    <TransitionGroup component="ul">
       {props.items.map((todo, idx) => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          idx={idx}
-          onDeleteTodo={props.onDeleteTodo}
-          onDragStart={dragStartHandler}
-          onDragEnter={dragEnterHandler}
-          onDragEnd={dragEndHandler}
-        />
+        <CSSTransition key={todo.id} timeout={500} classNames="todo">
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            idx={idx}
+            onDeleteTodo={props.onDeleteTodo}
+            onDragStart={dragStartHandler}
+            onDragEnter={dragEnterHandler}
+            onDragEnd={dragEndHandler}
+          />
+        </CSSTransition>
       ))}
-    </ul>
+    </TransitionGroup>
   );
 };
 

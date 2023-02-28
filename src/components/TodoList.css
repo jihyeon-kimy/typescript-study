@@ -15,3 +15,16 @@ li {
   justify-content: space-between;
   align-items: center;
 }
+
+.todo-enter-active {
+  opacity: 1;
+}
+
+.todo-exit-active {
+  opacity: 0;
+}
+
+.todo-enter-active,
+.todo-exit-active {
+  transition: opacity 500ms;
+}
